@@ -2,8 +2,8 @@ library(tidyverse)
 library(tidymodels)
 library(vroom)
 ## Read in the data
-bikeTrain <- read.csv("./Stat348/Kaggle-Bike-Share/train.csv")
-bikeTest <- read.csv("./Stat348/Kaggle-Bike-Share/test.csv")
+bikeTrain <- read.csv("./train.csv")
+bikeTest <- read.csv("./test.csv")
 ## Remove casual and registered because we can't use them to predict
 bikeTrain <- bikeTrain %>%
   select(-casual, - registered)
