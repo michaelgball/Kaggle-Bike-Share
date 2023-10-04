@@ -7,7 +7,7 @@ library(poissonreg)
 
 ## Read in the data
 bikeTrain <- vroom("./train.csv")
-bikeTest <- read.csv("./test.csv")
+bikeTest <- vroom("./test.csv")
 ## Remove casual and registered because we can't use them to predict
 bikeTrain <- bikeTrain %>%
   select(-casual, - registered)
@@ -15,6 +15,8 @@ bikeTrain$datetime <- as_datetime(bikeTrain$datetime)
 bikeTest$datetime <- as_datetime(bikeTest$datetime)
 
 my_recipe <- recipe(count~., data=bikeTrain) %>%
+  step_date(datetime, features="year")%>%
+  step_mutate(year=factor(datetime_year))%>%
   step_mutate(weather=ifelse(weather==4, 3, weather)) %>% #Relabel weather 4 to 3
   step_mutate(weather=factor(weather, levels=1:3, labels=c("Sunny", "Mist", "Rain"))) %>%
   step_mutate(season=factor(season, levels=1:4, labels=c("Spring", "Summer", "Fall", "Winter"))) %>%
@@ -24,7 +26,7 @@ my_recipe <- recipe(count~., data=bikeTrain) %>%
   step_rm(datetime)%>%
   step_dummy(all_nominal_predictors()) %>%
   step_normalize(all_numeric_predictors())
-my_recipe <- prep(my_recipe)
+  my_recipe <- prep(my_recipe)
 
 folds <- vfold_cv(bikeTrain, v = 5, repeats=1)
 
